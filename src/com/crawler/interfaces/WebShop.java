@@ -1,20 +1,26 @@
 package com.crawler.interfaces;
 
 import java.util.List;
-import java.util.Map;
+
+import org.openqa.selenium.JavascriptExecutor;
 
 import com.crawler.enums.Category;
 import com.crawler.model.Item;
 
 public interface WebShop {
 
-	List<Item> getItemsFromCategory(Category category);
+	String getBaseUrl();
+	
+	String getShopImageUrl();
+	
+	List<Item> getItems(Category category);
 	
 	List<Item> getItems();
 
-	void updateItemsList() throws Exception;
+	void updateItems() throws Exception;
 	
 	void close();
 	
-	Map<String, Category> getKategorijeUrls();
+	JavascriptExecutor js();
+	
 }

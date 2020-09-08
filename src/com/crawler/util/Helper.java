@@ -1,31 +1,40 @@
 package com.crawler.util;
 
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 public class Helper {
 
-	public static String replaceCroatianLetters(String croatianString) {
-		String englishString = croatianString;
-		englishString = englishString.replace("Č", "C");
-		englishString = englishString.replace("č", "c");
-		englishString = englishString.replace("Ć", "C");
-		englishString = englishString.replace("ć", "c");
-		englishString = englishString.replace("Š", "S");
-		englishString = englishString.replace("š", "s");
-		englishString = englishString.replace("Đ", "D");
-		englishString = englishString.replace("đ", "d");
-		englishString = englishString.replace("Ž", "Z");
-		englishString = englishString.replace("ž", "z");
-		return englishString;
+	public static void printProgress(long startTime, long total, long current) {
+	    long eta = current == 0 ? 0 : 
+	        (total - current) * (System.currentTimeMillis() - startTime) / current;
+
+	    String etaHms = current == 0 ? "N/A" : 
+	            String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(eta),
+	                    TimeUnit.MILLISECONDS.toMinutes(eta) % TimeUnit.HOURS.toMinutes(1),
+	                    TimeUnit.MILLISECONDS.toSeconds(eta) % TimeUnit.MINUTES.toSeconds(1));
+
+	    StringBuilder string = new StringBuilder(140);   
+	    int percent = (int) (current * 100 / total);
+	    string
+	        .append(String.join("", Collections.nCopies(percent == 0 ? 2 : 2 - (int) (Math.log10(percent)), " ")))
+	        .append(String.format(" %d%% [", percent))
+	        .append(String.join("", Collections.nCopies(percent, "=")))
+	        .append('>')
+	        .append(String.join("", Collections.nCopies(100 - percent, " ")))
+	        .append(']')
+	        .append(String.join("", Collections.nCopies(current == 0 ? (int) (Math.log10(total)) : (int) (Math.log10(total)) - (int) (Math.log10(current)), " ")))
+	        .append(String.format(" %d/%d, ETA: %s", current, total, etaHms));
+
+	    System.out.print(string);
 	}
 	
-	public static String removeLeadingWhitespaces(String line) {
-		String newLine = line + "";
-		while (newLine.charAt(0) == ' ' || newLine.charAt(0) == '\t' || newLine.charAt(0) == '\n') {
-			newLine = newLine.substring(1);
+	public static void sleep(long ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		while (newLine.charAt(newLine.length() - 1) == ' ' || newLine.charAt(newLine.length() - 1) == '\t' || newLine.charAt(newLine.length() - 1) == '\n') {
-			newLine = newLine.substring(0, newLine.length() - 1);
-		}
-		return newLine;
 	}
 	
 }
