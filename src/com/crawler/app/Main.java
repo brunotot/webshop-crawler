@@ -1,7 +1,7 @@
 package com.crawler.app;
 
 import com.crawler.interfaces.WebShop;
-import com.crawler.shops.Kaufland;
+import com.crawler.model.Item;
 import com.crawler.shops.Konzum;
 
 public class Main {
@@ -12,9 +12,11 @@ public class Main {
 			WebShop kaufland = null;
 			try {
 				konzum = new Konzum();
-				kaufland = new Kaufland();
-				konzum.getItems().forEach(item -> System.out.println(item.getTitle()));
-				kaufland.getItems().forEach(item -> System.out.println(item.getTitle()));
+//				kaufland = new Kaufland();
+				for (Item item : konzum.getItems())
+					System.out.println(item.getTitle());
+//				for (Item item : kaufland.getItems())
+//					System.out.println(item.getTitle());
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

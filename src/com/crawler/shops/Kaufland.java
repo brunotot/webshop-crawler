@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.crawler.driver.IWebDriver;
 import com.crawler.enums.Category;
 import com.crawler.interfaces.WebShop;
 import com.crawler.model.Item;
+import com.crawler.script.Scripts;
+import com.crawler.util.Helper;
 
 public class Kaufland implements WebShop {
 	
@@ -22,12 +25,12 @@ public class Kaufland implements WebShop {
 	
 	private List<Item> items;
 
-	private IWebDriver driver;
+	private WebDriver driver;
 		
 	public Kaufland() throws Exception {
 		this.items = new ArrayList<>();
 		this.kategorijeUrls = new HashMap<>();
-		this.driver = new IWebDriver();
+		this.driver = Helper.loadNewDriver();
 		this.driver.navigate().to(getBaseUrl());
 		new WebDriverWait(this.driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.className("cookie-alert-extended-button")));
 		this.driver.findElement(By.className("cookie-alert-extended-button")).click();
@@ -43,13 +46,10 @@ public class Kaufland implements WebShop {
 
 	@Override
 	public List<Item> getItems(Category category) {
-		List<Item> itemsFromCategory = new ArrayList<>();
-		this.items.forEach(item -> {
-			if (item.getCategory().equals(category)) {
-				itemsFromCategory.add(item);
-			}
-		});
-		return itemsFromCategory;
+		return this.items
+				.stream()
+				.filter(item -> item.getCategory().equals(category))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class Kaufland implements WebShop {
 			this.driver.navigate().to(url);
 			List<WebElement> elements = this.driver.findElements(By.className("o-overview-list__list-item"));
 			for (WebElement element : elements) {
-				js().executeScript(IWebDriver.SCRIPT_SCROLL_INTO_VIEW, element);
+				js().executeScript(Scripts.SCRIPT_SCROLL_INTO_VIEW, element);
 				WebElement button = element.findElement(By.className("a-button__container"));
 				if (!"Otkrij više".equals(button.getText())) {
 					String itemUrl = element.findElement(By.cssSelector("div div a")).getAttribute("href");
@@ -81,7 +81,10 @@ public class Kaufland implements WebShop {
 					float price = Float.parseFloat(priceString.split("( kn)|(.-)")[0]);
 					WebElement textElement = element.findElement(By.className("m-offer-tile__text"));
 					String description = textElement.getText();
-					String title = textElement.findElement(By.xpath("//*[contains(@class, 'm-offer-tile__title') or contains(@class, 'm-offer-tile__subtitle')]")).getText();
+					String title = Helper.findElement(element,
+							By.className("m-offer-tile__title"),
+							By.className("m-offer-tile__subtitle")
+					).getText();
 					Item item = new Item(imageUrl, itemUrl, getShopImageUrl(), category, price, title, description);
 					list.add(item);
 				}

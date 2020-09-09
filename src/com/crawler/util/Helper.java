@@ -1,33 +1,20 @@
 package com.crawler.util;
 
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.crawler.script.Scripts;
 
 public class Helper {
-
-	public static void printProgress(long startTime, long total, long current) {
-	    long eta = current == 0 ? 0 : 
-	        (total - current) * (System.currentTimeMillis() - startTime) / current;
-
-	    String etaHms = current == 0 ? "N/A" : 
-	            String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(eta),
-	                    TimeUnit.MILLISECONDS.toMinutes(eta) % TimeUnit.HOURS.toMinutes(1),
-	                    TimeUnit.MILLISECONDS.toSeconds(eta) % TimeUnit.MINUTES.toSeconds(1));
-
-	    StringBuilder string = new StringBuilder(140);   
-	    int percent = (int) (current * 100 / total);
-	    string
-	        .append(String.join("", Collections.nCopies(percent == 0 ? 2 : 2 - (int) (Math.log10(percent)), " ")))
-	        .append(String.format(" %d%% [", percent))
-	        .append(String.join("", Collections.nCopies(percent, "=")))
-	        .append('>')
-	        .append(String.join("", Collections.nCopies(100 - percent, " ")))
-	        .append(']')
-	        .append(String.join("", Collections.nCopies(current == 0 ? (int) (Math.log10(total)) : (int) (Math.log10(total)) - (int) (Math.log10(current)), " ")))
-	        .append(String.format(" %d/%d, ETA: %s", current, total, etaHms));
-
-	    System.out.print(string);
-	}
 	
 	public static void sleep(long ms) {
 		try {
@@ -35,6 +22,68 @@ public class Helper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static WebDriver loadNewDriver() {
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("start-maximized");
+//		options.addArguments("--headless");
+//        options.addArguments("window-size=1920,1080");
+		//options.addArguments("--proxy-server=http://" + "83.97.23.90:18080");
+		return new ChromeDriver(options);
+	}
+	
+	public static String openInNewTab(WebDriver driver, String url) {
+		Set<String> winHandles = driver.getWindowHandles();
+		int totalHandles = winHandles.size();
+		((JavascriptExecutor) driver).executeScript(Scripts.SCRIPT_WINDOW_OPEN);
+		new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfWindowsToBe(totalHandles + 1));
+		driver.navigate().to(url);
+		return driver.getWindowHandle();
+	}
+	
+	public static String openInNewTab(WebDriver driver, WebElement element) {
+		Set<String> winHandles = driver.getWindowHandles();
+		String selectLinkOpeninNewTab = Keys.chord(Keys.CONTROL, Keys.RETURN); 
+		element.sendKeys(selectLinkOpeninNewTab);
+		new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfWindowsToBe(winHandles.size() + 1));
+		Set<String> newWinHandles = driver.getWindowHandles();
+		String h = null;
+		for (String newHandle : newWinHandles) {
+			boolean found = true;
+			for (String oldHandle : winHandles) {
+				if (oldHandle.equals(newHandle)) {
+					found = false;
+					break;
+				}
+			}
+			if (found) {
+				h = newHandle;
+				driver.switchTo().window(newHandle);
+				break;
+			}
+		}
+		return h;
+	}
+	
+	public static WebElement findElement(WebDriver driver, By... bies) {
+		for (By by : bies) {
+			try {
+				WebElement webElement = driver.findElement(by);
+				return webElement;
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+
+	public static WebElement findElement(WebElement element, By... bies) {
+		for (By by : bies) {
+			try {
+				WebElement webElement = element.findElement(by);
+				return webElement;
+			} catch (Exception e) {}
+		}
+		return null;
 	}
 	
 }

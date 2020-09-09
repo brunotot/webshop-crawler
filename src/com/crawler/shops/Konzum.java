@@ -4,17 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.crawler.driver.IWebDriver;
 import com.crawler.enums.Category;
 import com.crawler.interfaces.WebShop;
 import com.crawler.model.Item;
+import com.crawler.script.Scripts;
+import com.crawler.util.Helper;
+import com.crawler.util.LogTracker;
 
 public class Konzum implements WebShop {
 	
@@ -22,14 +26,14 @@ public class Konzum implements WebShop {
 	
 	private List<Item> items;
 
-	private IWebDriver driver;
+	private WebDriver driver;
 		
 	public Konzum() throws Exception {
 		this.items = new ArrayList<>();
 		this.kategorijeUrls = new HashMap<>();
-		this.driver = new IWebDriver();
+		this.driver = Helper.loadNewDriver();
 		this.driver.navigate().to(getBaseUrl());
-		new WebDriverWait(driver, 30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/div/div/nav/div/ul/li")));
+		new WebDriverWait(this.driver, 30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/div/div/nav/div/ul/li")));
 		this.driver.findElement(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/button")).click();
 		this.driver.findElement(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/div/div/nav/button")).click();
 		List<WebElement> kategorije = this.driver.findElements(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/div/div/nav/div/ul/li/a"));
@@ -44,13 +48,10 @@ public class Konzum implements WebShop {
 
 	@Override
 	public List<Item> getItems(Category category) {
-		List<Item> itemsFromCategory = new ArrayList<>();
-		this.items.forEach(item -> {
-			if (item.getCategory().equals(category)) {
-				itemsFromCategory.add(item);
-			}
-		});
-		return itemsFromCategory;
+		return this.items
+				.stream()
+				.filter(item -> item.getCategory().equals(category))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -61,22 +62,31 @@ public class Konzum implements WebShop {
 	@Override
 	public void updateItems() throws Exception {
 		List<Item> list = new ArrayList<>();
+		LogTracker kategorijeUrlsTracker = new LogTracker(kategorijeUrls);
 		this.kategorijeUrls.forEach((url, category) -> {
+			System.out.println(kategorijeUrlsTracker.track(1));
 			this.driver.navigate().to(url);
 			List<WebElement> subCategories = this.driver.findElements(By.xpath("//*[@id=\"content-start\"]/section/div/div/div[2]/div"));
 			List<String> urls = new ArrayList<>();
+			LogTracker subCategoriesTracker = null;
+			try { subCategoriesTracker = new LogTracker(subCategories); } catch (Exception e) {}
 			for (int i = 0; i < subCategories.size(); i += 3) {
+				System.out.println("\t" + subCategoriesTracker.track(3));
 				WebElement div = subCategories.get(i);
 				String href = div.findElement(By.cssSelector("div > h1 > a")).getAttribute("href");
 				urls.add(href + "?sort%5B%5D=&per_page=1000");
 			}
+			LogTracker urlsTracker = null;
+			try { urlsTracker = new LogTracker(urls); } catch (Exception e) {}
 			for (String u : urls) {
+				System.out.println("\n\t" + urlsTracker.track(1));
 				this.driver.navigate().to(u);
 				new WebDriverWait(this.driver, 30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"content-start\"]/section/div/div/div[2]/div[2]/article")));
+				Helper.sleep(5000);
 				List<WebElement> listElements = this.driver.findElements(By.xpath("//*[@id=\"content-start\"]/section/div/div/div[2]/div[2]/article"));
 				for (WebElement article : listElements) {
 					new WebDriverWait(driver, 5).until(ExpectedConditions.elementToBeClickable(article));
-					((JavascriptExecutor) driver).executeScript(IWebDriver.SCRIPT_SCROLL_INTO_VIEW, article);
+					js().executeScript(Scripts.SCRIPT_SCROLL_INTO_VIEW, article);
 					String imageUrl = article.findElement(By.xpath("div/div/div/a/img")).getAttribute("src");
 					imageUrl = imageUrl.substring(0, imageUrl.lastIndexOf('/')) + "/57ed05bea98bceae5f0eaada26b69cee6c61471d3030f7123d212844a35eba04";
 					WebElement aElem = article.findElement(By.xpath("div/div/div/a"));
@@ -85,7 +95,8 @@ public class Konzum implements WebShop {
 					String[] priceParams = article.findElement(By.xpath("div/div[3]/div[1]/div[1]")).getText().split("\n");
 					String priceString = priceParams[0] + "." + priceParams[1];
 					float price = Float.parseFloat(priceString);
-					String description = this.getDescription(aElem);
+//					String description = this.getDescription(aElem);
+					String description = "";
 					Item item = new Item(imageUrl, itemUrl, getShopImageUrl(), category, price, title, description);
 					this.items.add(item);
 				}
@@ -95,21 +106,20 @@ public class Konzum implements WebShop {
 	}
 	
 	private String getDescription(WebElement element) {
-		String firstHandle = this.driver.getWindowHandle();
-		driver.openInNewTab(element);
-		WebElement descElem = null;
+		String previousHandle = this.driver.getWindowHandle();
+		@SuppressWarnings("unused")
+		String newHandle = Helper.openInNewTab(driver, element);
+		String description = "";
 		try {
-			descElem = this.driver.findElement(By.tagName("dl"));
+			WebElement descElem = this.driver.findElement(By.tagName("dl"));
+			new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOf(descElem));
+			description = descElem.getText();
 		} catch (Exception e) {
-			// No description
+			// No description found. Ignoring...
+		} finally {
 			driver.close();
-			driver.switchTo().window(firstHandle);
-			return "";
+			driver.switchTo().window(previousHandle);
 		}
-		new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOf(descElem));
-		String description = descElem.getText();		
-		driver.close();
-		driver.switchTo().window(firstHandle);
 		return description;
 	}
 	
