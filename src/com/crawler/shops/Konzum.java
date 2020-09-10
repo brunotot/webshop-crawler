@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.crawler.driver.IWebDriver;
 import com.crawler.enums.Category;
 import com.crawler.interfaces.WebShop;
 import com.crawler.model.Item;
@@ -26,12 +26,12 @@ public class Konzum implements WebShop {
 	
 	private List<Item> items;
 
-	private WebDriver driver;
+	private IWebDriver driver;
 		
 	public Konzum() throws Exception {
 		this.items = new ArrayList<>();
 		this.kategorijeUrls = new HashMap<>();
-		this.driver = Helper.loadNewDriver();
+		this.driver = new IWebDriver(true);
 		this.driver.navigate().to(getBaseUrl());
 		new WebDriverWait(this.driver, 30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/div/div/nav/div/ul/li")));
 		this.driver.findElement(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/button")).click();

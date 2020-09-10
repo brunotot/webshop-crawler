@@ -7,8 +7,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -22,15 +20,6 @@ public class Helper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static WebDriver loadNewDriver() {
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("start-maximized");
-//		options.addArguments("--headless");
-//        options.addArguments("window-size=1920,1080");
-		//options.addArguments("--proxy-server=http://" + "83.97.23.90:18080");
-		return new ChromeDriver(options);
 	}
 	
 	public static String openInNewTab(WebDriver driver, String url) {
