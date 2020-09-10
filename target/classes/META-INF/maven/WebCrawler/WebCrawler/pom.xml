@@ -3,27 +3,44 @@
   <groupId>WebCrawler</groupId>
   <artifactId>WebCrawler</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <repositories>
+	<repository>
+	    <id>jitpack.io</id>
+	    <url>https://jitpack.io</url>
+	</repository>
+  </repositories>
   <dependencies>
 	<dependency>
 	    <groupId>org.seleniumhq.selenium</groupId>
 	    <artifactId>selenium-remote-driver</artifactId>
-	    <version>3.141.59</version>
+<!-- 	    <version>3.141.59</version> -->
+	    <version>3.9.1</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.seleniumhq.selenium</groupId>
+	    <artifactId>selenium-server</artifactId>
+ 	    <version>3.9.1</version>
 	</dependency>
 	<dependency>
 	    <groupId>org.seleniumhq.selenium</groupId>
 	    <artifactId>selenium-java</artifactId>
-	    <version>3.141.59</version>
+	    <version>3.9.1</version>
 	</dependency>
 	<dependency>
 	    <groupId>org.seleniumhq.selenium</groupId>
 	    <artifactId>selenium-api</artifactId>
-	    <version>3.141.59</version>
+	    <version>3.9.1</version>
 	</dependency>
 	<dependency>
 		<groupId>org.projectlombok</groupId>
 		<artifactId>lombok</artifactId>
 		<version>1.18.12</version>
 		<scope>provided</scope>
+	</dependency>
+	<dependency>
+	    <groupId>com.github.PanagiotisDrakatos</groupId>
+	    <artifactId>T0rlib4j</artifactId>
+	    <version>1.0.2</version>
 	</dependency>
   </dependencies>
   <build>
