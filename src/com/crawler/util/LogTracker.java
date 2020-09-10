@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class LogTracker {
-
-	private Object object;
 	
 	private Integer current;
 	
@@ -21,7 +19,6 @@ public class LogTracker {
 		if (object == null || (!(object instanceof Map) && !(object instanceof List))) {
 			throw new Exception("Object instance invalid");
 		}
-		this.object = object;
 		this.startTime = null;
 		this.current = 1;
 		if (object instanceof List) {

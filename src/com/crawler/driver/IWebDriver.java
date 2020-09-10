@@ -5,10 +5,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.crawler.script.Scripts;
 
 import net.sf.T0rlib4j.controller.network.JavaTorRelay;
 
@@ -139,4 +145,57 @@ public class IWebDriver implements WebDriver {
 		return this.driver.manage();
 	}
 
+	public String openInNewTab(String url) {
+		Set<String> winHandles = this.driver.getWindowHandles();
+		int totalHandles = winHandles.size();
+		((JavascriptExecutor) driver).executeScript(Scripts.SCRIPT_WINDOW_OPEN);
+		new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfWindowsToBe(totalHandles + 1));
+		this.driver.navigate().to(url);
+		return this.driver.getWindowHandle();
+	}
+	
+	public String openInNewTab(WebElement element) {
+		Set<String> winHandles = this.driver.getWindowHandles();
+		String selectLinkOpeninNewTab = Keys.chord(Keys.CONTROL, Keys.RETURN); 
+		element.sendKeys(selectLinkOpeninNewTab);
+		new WebDriverWait(this.driver, 5).until(ExpectedConditions.numberOfWindowsToBe(winHandles.size() + 1));
+		Set<String> newWinHandles = this.driver.getWindowHandles();
+		String h = null;
+		for (String newHandle : newWinHandles) {
+			boolean found = true;
+			for (String oldHandle : winHandles) {
+				if (oldHandle.equals(newHandle)) {
+					found = false;
+					break;
+				}
+			}
+			if (found) {
+				h = newHandle;
+				this.driver.switchTo().window(newHandle);
+				break;
+			}
+		}
+		return h;
+	}
+	
+	public WebElement findElement(By... bies) {
+		for (By by : bies) {
+			try {
+				WebElement webElement = driver.findElement(by);
+				return webElement;
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+
+	public WebElement findElement(WebElement element, By... bies) {
+		for (By by : bies) {
+			try {
+				WebElement webElement = element.findElement(by);
+				return webElement;
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+	
 }

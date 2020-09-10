@@ -108,7 +108,7 @@ public class Konzum implements WebShop {
 	private String getDescription(WebElement element) {
 		String previousHandle = this.driver.getWindowHandle();
 		@SuppressWarnings("unused")
-		String newHandle = Helper.openInNewTab(driver, element);
+		String newHandle = this.driver.openInNewTab(element);
 		String description = "";
 		try {
 			WebElement descElem = this.driver.findElement(By.tagName("dl"));

@@ -81,7 +81,7 @@ public class Kaufland implements WebShop {
 					float price = Float.parseFloat(priceString.split("( kn)|(.-)")[0]);
 					WebElement textElement = element.findElement(By.className("m-offer-tile__text"));
 					String description = textElement.getText();
-					String title = Helper.findElement(element,
+					String title = this.driver.findElement(element,
 							By.className("m-offer-tile__title"),
 							By.className("m-offer-tile__subtitle")
 					).getText();
