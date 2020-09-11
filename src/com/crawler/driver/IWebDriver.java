@@ -1,10 +1,12 @@
 package com.crawler.driver;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -24,60 +26,96 @@ public class IWebDriver implements WebDriver {
 	
 	private WebDriver driver;
 	
-	private Integer torProxyPort;
+	private boolean enableTorProxy;
 	
-	private String torProxyIp;
+	private boolean enableJavaScript;
 	
-	private String protocol;
+	private ChromeOptions options;
 	
-	public IWebDriver(boolean includeTorProxy) throws Exception {
-		if (includeTorProxy) {
-			initializeTorProxy(null);
-		} else {
-			ChromeOptions options = new ChromeOptions();
-			options.addArguments("start-maximized");
-			this.driver = new ChromeDriver(options);
-		}
+	public IWebDriver() throws Exception {
+		this.enableJavaScript = true;
+		this.enableTorProxy = false;
+		setEnableTorProxy(true);
+		this.options = new ChromeOptions();
+		this.options.addArguments("--proxy-server=socks5://127.0.0.1:" + this.node.getLocalPort());
+		initDriver();
 	}
 
-	public void rotateIp() throws Exception {
-		initializeTorProxy(getCurrentUrl());
-	}
-	
-	public void stopTor() throws Exception {
-		if (isTorRunning()) {
-			this.node.ShutDown();
-			this.node = null;
+	public void setEnableTorProxy(boolean enable) throws Exception {
+		if (enable == this.enableTorProxy) {
+			return;
+		}
+		if (enable) {
+			this.node = new JavaTorRelay(new File("torfiles"));
+			this.enableTorProxy = true;
+		} else {
+			if (this.node != null) {
+				this.node.ShutDown();
+				this.node = null;
+			}
+			this.enableTorProxy = false;
 		}
 	}
 	
-	public boolean isTorRunning() {
-		return this.node != null;
+	public void setEnableJavaScript(boolean enable) throws Exception {
+		if (this.driver == null) {
+			throw new Exception("Driver is NULL");
+		}
+		if (this.enableJavaScript == enable) {
+			return;
+		}
+		this.enableJavaScript = enable;
+		String currentUrl = getCurrentUrl();
+		if (enable) {
+	        HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+	        chromePrefs.put("profile.default_content_setting_values.javascript", 2);
+	        this.options.setExperimentalOption("prefs", chromePrefs);
+		} else {
+	        HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+	        chromePrefs.put("profile.default_content_setting_values.javascript", 1);
+	        this.options.setExperimentalOption("prefs", chromePrefs);
+		}
+		if (this.enableTorProxy) {
+    		this.options.addArguments("--proxy-server=socks5://127.0.0.1:" + this.node.getLocalPort());
+        }
+		initDriver();
+		if (currentUrl != null && !currentUrl.isEmpty()) {
+			driver.navigate().to(currentUrl);
+		}
 	}
 	
-	private void initializeTorProxy(String url) throws Exception {
+	public JavascriptExecutor js() {
+		return (JavascriptExecutor) this.driver;
+	}
+	
+	public void rotateIp() throws Exception {
 		if (this.node != null) {
 			this.node.ShutDown();
 			this.node = null;
 		}
+		this.enableTorProxy = false;
+		setEnableTorProxy(true);
+		this.options = new ChromeOptions();
+		this.options.addArguments("--proxy-server=socks5://127.0.0.1:" + this.node.getLocalPort());
+		initDriver();
+	}
+	
+	public boolean isEnableTorProxy() {
+		return this.enableTorProxy;
+	}
+	
+	public boolean isEnableJavaScript() {
+		return this.enableJavaScript;
+	}
+	
+	private void initDriver() throws Exception {
 		if (this.driver != null) {
 			this.driver.quit();
 			this.driver = null;
 		}
-		this.node = new JavaTorRelay(new File("torfiles"));
-        this.torProxyPort = node.getLocalPort();
-        this.torProxyIp = "127.0.0.1";
-        this.protocol = "socks5";
-        ChromeOptions options = new ChromeOptions();
-        String proxy = this.protocol + "://" + this.torProxyIp + ":" + this.torProxyPort;
-		options.addArguments("--proxy-server=" + proxy);
-		options.addArguments("start-maximized");
-//		options.addArguments("--headless");
-//		options.addArguments("window-size=1920,1080");
-		this.driver = new ChromeDriver(options);
-		if (url != null && !url.isEmpty()) {
-			this.driver.navigate().to(url);
-		}
+		this.driver = new ChromeDriver(this.options);
+		this.driver.manage().window().setSize(new Dimension(1920, 1080));
+		setEnableJavaScript(true);
 	}
 	
 	@Override

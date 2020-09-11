@@ -1,7 +1,20 @@
 package com.crawler.enums;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public enum Category {
 	MESO_RIBA,
@@ -22,38 +35,63 @@ public enum Category {
 	PARTY,
 	AUTOMOBILI,
 	SKOLA_URED,
+	NEKRETNINE,
+	NAUTIKA,
+	TURIZAM,
+	USLUGE,
+	ELEKTRONIKA,
+	ODJECA_OBUCA_I_MODNI_DODACI,
+	POSAO,
+	SPORT_I_OPREMA,
+	GLAZBALA_I_LITERATURA,
+	ALATI,
+	IZGUBLJENO_PRONADENO,
 	HRANA_OPCENITO,
 	LJETO;
 	
-	private static Map<Category, String[]> map;
+	private static Map<Category, List<String>> map;
 	static {
 		map = new HashMap<>();
-		map.put(Category.MESO_RIBA, new String[] { "Meso i riba", "Meso, perad, kobasice", "Svježa riba" });
-		map.put(Category.MLIJECNI_PROIZVODI, new String[] { "Mliječni proizvodi i jaja", "Mliječni proizvodi" });
-		map.put(Category.SMRZNUTI_PROIZVODI, new String[] { "Smrznuti proizvodi", "Smrznuta hrana" });
-		map.put(Category.VOCE_POVRCE, new String[] { "Voće i povrće", "Voće, povrće, biljke" });
-		map.put(Category.NAPITCI, new String[] { "Pića", "Napitci, alkoholna pića" });
-		map.put(Category.OSNOVNE_NAMIRNICE, new String[] { "Osnovne živežne namirnice" });
-		map.put(Category.DELIKATESE, new String[] { "Delikatesa", "Delikatese, konzerve", "Konzervirano i juhe" });
-		map.put(Category.OSTALO, new String[] { "Odjeća, oprema za automobil, slobodno vrijeme, igračke", "Ostalo", "Na otvorenom" });
-		map.put(Category.UMACI_ZACINI, new String[] { "Umaci i začini" });
-		map.put(Category.KUCANSTVO, new String[] { "Sve za kućanstvo", "Elektrouređaji, uredski pribor, multimedija", "Posuđe", "Kućanske potrepštine" }); 
-		map.put(Category.KAVA_CAJ_SLATKISI, new String[] { "Kava, čaj, slatkiši, grickalice", "Slatkiši i grickalice", "Pahuljice, namazi, kave, čajevi" });
-		map.put(Category.DROGERIJA_LJUBIMCI, new String[] { "Drogerija, hrana za kućne ljubimce", "Kućni ljubimci" });
-		map.put(Category.PRIPREMA_JELA, new String[] { "Priprema jela", "Tjestenina, riža, njoki, tortilje", "Priprema kolača" });
-		map.put(Category.NJEGA_HIGIJENA, new String[] { "Njega i higijena", "Čišćenje i pospremanje" });
-		map.put(Category.DJECA, new String[] { "Dječji svijet" });
-		map.put(Category.PARTY, new String[] { "Party asortiman" });
-		map.put(Category.AUTOMOBILI, new String[] { "Auto program" });
-		map.put(Category.SKOLA_URED, new String[] { "Škola i ured" });
-		map.put(Category.HRANA_OPCENITO, new String[] { "Pazim što jedem", "OPG proizvodi", "Pekarnica", "Brzi obrok" });
-		map.put(Category.LJETO, new String[] { "Ljeto" });
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			InputStream is = new FileInputStream(new File("resources/categories.xml"));
+			Document doc = builder.parse(is);
+			NodeList categories = doc.getElementsByTagName("category");
+			for (int i = 0; i < categories.getLength(); i++) {
+	            Node category = categories.item(i);
+	            if (category.getNodeType() == Node.ELEMENT_NODE) {
+	            	Element categoryElement = (Element) category;
+	                String categoryValue = categoryElement.getAttribute("value");
+	            	NodeList attributes = categoryElement.getElementsByTagName("attribute");
+	                for (int j = 0; j < attributes.getLength(); j++) {
+	                	String attributeValue = attributes.item(j).getTextContent();
+	                	add(categoryValue, attributeValue);
+	                }
+	            }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void add(String category, String attribute) {
+		Category c = Category.valueOf(category);
+		if (c == null) {
+			return;
+		}
+		List<String> attributes = map.get(c);
+		if (attributes == null) {
+			attributes = new ArrayList<>();
+		}
+		attributes.add(attribute);
+		map.put(c, attributes);
 	}
 	
 	public static Category get(String shopSpecificCategory) {
-		for (Map.Entry<Category, String[]> entry : map.entrySet()) {
+		for (Map.Entry<Category, List<String>> entry : map.entrySet()) {
 			Category category = entry.getKey();
-			String[] shopSpecificCategoryNames = entry.getValue();
+			List<String> shopSpecificCategoryNames = entry.getValue();
 			for (String shopSpecificCategoryName : shopSpecificCategoryNames) {
 				if (shopSpecificCategoryName.equals(shopSpecificCategory)) {
 					return category;

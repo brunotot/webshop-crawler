@@ -1,0 +1,123 @@
+<categories>
+	<category value="MESO_RIBA">
+		<attribute>Meso i riba</attribute>
+		<attribute>Meso, perad, kobasice</attribute>
+		<attribute>Svježa riba</attribute>
+	</category>
+	<category value="MLIJECNI_PROIZVODI">
+		<attribute>Mliječni proizvodi i jaja</attribute>
+		<attribute>Mliječni proizvodi</attribute>
+	</category>
+	<category value="SMRZNUTI_PROIZVODI">
+		<attribute>Smrznuti proizvodi</attribute>
+		<attribute>Smrznuta hrana</attribute>
+	</category>
+	<category value="VOCE_POVRCE">
+		<attribute>Voće i povrće</attribute>
+		<attribute>Voće, povrće, biljke</attribute>
+	</category>
+	<category value="NAPITCI">
+		<attribute>Pića</attribute>
+		<attribute>Napitci, alkoholna pića</attribute>
+		<attribute>Hrana i piće</attribute>
+	</category>
+	<category value="OSNOVNE_NAMIRNICE">
+		<attribute>Osnovne živežne namirnice</attribute>
+	</category>
+	<category value="DELIKATESE">
+		<attribute>Delikatesa</attribute>
+		<attribute>Delikatese, konzerve</attribute>
+		<attribute>Konzervirano i juhe</attribute>
+	</category>
+	<category value="OSTALO">
+		<attribute>Odjeća, oprema za automobil, slobodno vrijeme, igračke</attribute>
+		<attribute>Ostalo</attribute>
+		<attribute>Na otvorenom</attribute>
+	</category>
+	<category value="UMACI_ZACINI">
+		<attribute>Umaci i začini</attribute>
+	</category>
+	<category value="KUCANSTVO">
+		<attribute>Sve za kućanstvo</attribute>
+		<attribute>Elektrouređaji, uredski pribor, multimedija</attribute>
+		<attribute>Kućanske potrepštine</attribute>
+		<attribute>Posuđe</attribute>
+		<attribute>Sve za dom</attribute>
+	</category>
+	<category value="KAVA_CAJ_SLATKISI">
+		<attribute>Kava, čaj, slatkiši, grickalice</attribute>
+		<attribute>Slatkiši i grickalice</attribute>
+		<attribute>Pahuljice, namazi, kave, čajevi</attribute>
+	</category>
+	<category value="DROGERIJA_LJUBIMCI">
+		<attribute>Drogerija, hrana za kućne ljubimce</attribute>
+		<attribute>Kućni ljubimci</attribute>
+	</category>
+	<category value="PRIPREMA_JELA">
+		<attribute>Priprema jela</attribute>
+		<attribute>Priprema kolača</attribute>
+		<attribute>Tjestenina, riža, njoki, tortilje</attribute>
+	</category>
+	<category value="NJEGA_HIGIJENA">
+		<attribute>Njega i higijena</attribute>
+		<attribute>Čišćenje i pospremanje</attribute>
+	</category>
+	<category value="DJECA">
+		<attribute>Dječji svijet</attribute>
+	</category>
+	<category value="PARTY">
+		<attribute>Party asortiman</attribute>
+	</category>
+	<category value="AUTOMOBILI">
+		<attribute>Auto program</attribute>
+		<attribute>Auto Moto</attribute>
+	</category>
+	<category value="SKOLA_URED">
+		<attribute>Škola i ured</attribute>
+	</category>
+	<category value="HRANA_OPCENITO">
+		<attribute>Pazim što jedem</attribute>
+		<attribute>OPG proizvodi</attribute>
+		<attribute>Pekarnica</attribute>
+		<attribute>Brzi obrok</attribute>
+	</category>
+	<category value="LJETO">
+		<attribute>Ljeto</attribute>
+	</category>
+	<category value="NEKRETNINE">
+		<attribute>Nekretnine</attribute>
+	</category>
+	<category value="NAUTIKA">
+		<attribute>Nautika</attribute>
+	</category>
+	<category value="TURIZAM">
+		<attribute>Turizam</attribute>
+	</category>
+	<category value="USLUGE">
+		<attribute>Usluge</attribute>
+	</category>
+	<category value="ELEKTRONIKA">
+		<attribute>Informatika</attribute>
+		<attribute>Mobiteli</attribute>
+		<attribute>Audio Video Foto</attribute>
+	</category>
+	<category value="ODJECA_OBUCA_I_MODNI_DODACI">
+		<attribute>Od glave do pete</attribute>
+	</category>
+	<category value="POSAO">
+		<attribute>Posao</attribute>
+	</category>
+	<category value="SPORT_I_OPREMA">
+		<attribute>Sport i oprema</attribute>
+	</category>
+	<category value="GLAZBALA_I_LITERATURA">
+		<attribute>Glazbala</attribute>
+		<attribute>Literatura</attribute>
+	</category>
+	<category value="ALATI">
+		<attribute>Strojevi i alati</attribute>
+	</category>
+	<category value="IZGUBLJENO_PRONADENO">
+		<attribute>Pronađeno blago</attribute>
+	</category>
+</categories>

@@ -30,9 +30,10 @@ public class Kaufland implements WebShop {
 	public Kaufland() throws Exception {
 		this.items = new ArrayList<>();
 		this.kategorijeUrls = new HashMap<>();
-		this.driver = new IWebDriver(true);
+		this.driver = new IWebDriver();
 		this.driver.navigate().to(getBaseUrl());
 		new WebDriverWait(this.driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.className("cookie-alert-extended-button")));
+		Helper.sleep(3000);
 		this.driver.findElement(By.className("cookie-alert-extended-button")).click();
 		List<WebElement> kategorije = this.driver.findElements(By.xpath("//*[@id=\"offers-overview-1\"]/ul/li/a"));
 		kategorije.forEach(k -> {
@@ -59,7 +60,7 @@ public class Kaufland implements WebShop {
 
 	@Override
 	public JavascriptExecutor js() {
-		return (JavascriptExecutor) this.driver;
+		return this.driver.js();
 	}
 	
 	@Override

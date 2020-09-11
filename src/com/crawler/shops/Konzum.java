@@ -31,7 +31,7 @@ public class Konzum implements WebShop {
 	public Konzum() throws Exception {
 		this.items = new ArrayList<>();
 		this.kategorijeUrls = new HashMap<>();
-		this.driver = new IWebDriver(true);
+		this.driver = new IWebDriver();
 		this.driver.navigate().to(getBaseUrl());
 		new WebDriverWait(this.driver, 30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/div/div/nav/div/ul/li")));
 		this.driver.findElement(By.xpath("//*[@id=\"default\"]/header/div[3]/div/div[1]/div[1]/button")).click();
@@ -105,9 +105,9 @@ public class Konzum implements WebShop {
 		this.items = list;
 	}
 	
+	@SuppressWarnings("unused")
 	private String getDescription(WebElement element) {
 		String previousHandle = this.driver.getWindowHandle();
-		@SuppressWarnings("unused")
 		String newHandle = this.driver.openInNewTab(element);
 		String description = "";
 		try {
@@ -130,7 +130,7 @@ public class Konzum implements WebShop {
 
 	@Override
 	public JavascriptExecutor js() {
-		return (JavascriptExecutor) this.driver;
+		return this.driver.js();
 	}
 
 	@Override
